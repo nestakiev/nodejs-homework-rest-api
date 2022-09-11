@@ -29,6 +29,7 @@ module.exports = {
           /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
         )
         .required(),
+      favorite: Joi.boolean()
     });
 
     const validationResult = schema.validate(request.body);
@@ -57,6 +58,20 @@ module.exports = {
       return response
         .status(400)
         .json(errorMessage(validationResult.error.details[0].message));
+    }
+
+    next();
+  },
+  updateStatusContactValidation: (request, response, next) => {
+    const schema = Joi.object({
+      favorite: Joi.boolean().required()
+    });
+
+    const validationResult = schema.validate(request.body);
+    if (validationResult.error) {
+      return response
+        .status(400)
+        .json({"message": "missing field favorite"});
     }
 
     next();
