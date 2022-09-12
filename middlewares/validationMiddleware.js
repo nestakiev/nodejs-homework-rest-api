@@ -13,6 +13,12 @@ const errorMessage = (message) => {
 
     case '"phone" is required':
       return { message: "missing required phone field" };
+    
+    case '\"email\" must be a valid email':
+      return {message: "Please, enter correct email"};
+
+    case '\"password\" length must be at least 6 characters long':
+      return {message: "Password must be at least 6 characters"};
 
     default:
       return { message: `${message}` };
@@ -62,6 +68,7 @@ module.exports = {
 
     next();
   },
+
   updateStatusContactValidation: (request, response, next) => {
     const schema = Joi.object({
       favorite: Joi.boolean().required()
@@ -72,6 +79,22 @@ module.exports = {
       return response
         .status(400)
         .json({"message": "missing field favorite"});
+    }
+
+    next();
+  },
+
+  registrationAndLoginValidation: (request, response, next) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required()
+    });
+
+    const validationResult = schema.validate(request.body);
+    if (validationResult.error) {
+      return response
+        .status(400)
+        .json(errorMessage(validationResult.error.details[0].message));
     }
 
     next();
