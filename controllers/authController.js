@@ -3,6 +3,7 @@ const {
   login,
   logout,
   updateUsersSubscription,
+  updateAvatar,
 } = require("../services/authService");
 
 const registrationController = async (request, response) => {
@@ -44,15 +45,29 @@ const updateUsersSubcriptionController = async (request, response) => {
   const { subscription } = request.body;
 
   if (!["starter", "pro", "business"].includes(subscription)) {
-    return response
-      .status(400)
-      .json({
-        message: "Subscription type may be one of starter, pro or business",
-      });
+    return response.status(400).json({
+      message: "Subscription type may be one of starter, pro or business",
+    });
   }
   const updatedUserInfo = await updateUsersSubscription(_id, subscription);
 
   response.status(200).json(updatedUserInfo);
+};
+
+const updateAvatarController = async (request, response) => {
+  const { path: tempUpload, filename } = request.file;
+  const { _id } = request.user;
+
+  try {
+    const avatarUrl = await updateAvatar(_id, tempUpload, filename);
+    response.status(200).json(avatarUrl);
+  } catch (err) {
+    response
+      .status(400)
+      .json({
+        message: `Something went whong, please try again ${err.message}`,
+      });
+  }
 };
 
 module.exports = {
@@ -61,4 +76,5 @@ module.exports = {
   logoutController,
   currentUserController,
   updateUsersSubcriptionController,
+  updateAvatarController,
 };
