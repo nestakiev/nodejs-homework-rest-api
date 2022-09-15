@@ -6,10 +6,12 @@ const {
   loginController,
   logoutController,
   currentUserController,
-  updateUsersSubcriptionController
+  updateUsersSubcriptionController,
+  updateAvatarController
 } = require("../../controllers/authController");
 
 const { authMiddleware } = require("../../middlewares/authMiddleware");
+const {uploadMulterMiddleware} = require("../../middlewares/uploadMulterMiddleware");
 
 const {
   registrationAndLoginValidation,
@@ -28,5 +30,7 @@ router.post("/logout", authMiddleware, logoutController);
 router.get("/current", authMiddleware, currentUserController);
 
 router.patch("/", authMiddleware, updateUsersSubcriptionController);
+
+router.patch("/avatars", authMiddleware, uploadMulterMiddleware.single('avatar'), updateAvatarController);
 
 module.exports = router;

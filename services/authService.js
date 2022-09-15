@@ -1,7 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const Jimp = require("jimp");
+const fs = require("fs/promises");
 
 const { User } = require("../db/authModel");
+
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const registration = async (email, password) => {
   const user = await User.findOne({ email });
@@ -9,10 +15,16 @@ const registration = async (email, password) => {
     return "Email in use";
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ email, password: hashPassword });
+  const avatarURL = gravatar.url(email);
+  const newUser = await User.create({
+    email,
+    password: hashPassword,
+    avatarURL,
+  });
   return {
     email: newUser.email,
     subscription: newUser.subscription,
+    avatarURL: newUser.avatarURL,
   };
 };
 
@@ -40,6 +52,7 @@ const login = async (email, password) => {
     user: {
       email: userWithToken.email,
       subscription: userWithToken.subscription,
+      // avatarURL: userWithToken.avatarURL,
     },
   };
 };
@@ -54,7 +67,31 @@ const updateUsersSubscription = async (id, subscription) => {
     { subscription },
     { new: true }
   );
-  return { email: newUserInfo.email, subscription: newUserInfo.subscription };
+  return {
+    email: newUserInfo.email,
+    subscription: newUserInfo.subscription,
+    avatarURL: newUserInfo.avatarURL,
+  };
+};
+
+const updateAvatar = async (id, tempUpload, filename) => {
+  const [extention] = filename.split(".").reverse();
+  const avatarName = `${id}.${extention}`;
+  const resultUpload = path.join(avatarsDir, avatarName);
+  const avatar = await Jimp.read(tempUpload);
+  await avatar.resize(250, 250).write(resultUpload);
+  await fs.unlink(tempUpload);
+  const avatarURL = path.join("/avatars", avatarName);
+
+  const newUsersAvatar = await User.findOneAndUpdate(
+    { _id: id },
+    { avatarURL },
+    { new: true }
+  );
+
+  return {
+    avatarURL: newUsersAvatar.avatarURL,
+  };
 };
 
 module.exports = {
@@ -62,4 +99,5 @@ module.exports = {
   login,
   logout,
   updateUsersSubscription,
+  updateAvatar,
 };
