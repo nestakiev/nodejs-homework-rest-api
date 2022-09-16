@@ -13,12 +13,12 @@ const errorMessage = (message) => {
 
     case '"phone" is required':
       return { message: "missing required phone field" };
-    
-    case '\"email\" must be a valid email':
-      return {message: "Please, enter correct email"};
 
-    case '\"password\" length must be at least 6 characters long':
-      return {message: "Password must be at least 6 characters"};
+    case '"email" must be a valid email':
+      return { message: "Please, enter correct email" };
+
+    case '"password" length must be at least 6 characters long':
+      return { message: "Password must be at least 6 characters" };
 
     default:
       return { message: `${message}` };
@@ -35,7 +35,7 @@ module.exports = {
           /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
         )
         .required(),
-      favorite: Joi.boolean()
+      favorite: Joi.boolean(),
     });
 
     const validationResult = schema.validate(request.body);
@@ -71,14 +71,12 @@ module.exports = {
 
   updateStatusContactValidation: (request, response, next) => {
     const schema = Joi.object({
-      favorite: Joi.boolean().required()
+      favorite: Joi.boolean().required(),
     });
 
     const validationResult = schema.validate(request.body);
     if (validationResult.error) {
-      return response
-        .status(400)
-        .json({"message": "missing field favorite"});
+      return response.status(400).json({ message: "missing field favorite" });
     }
 
     next();
@@ -87,7 +85,22 @@ module.exports = {
   registrationAndLoginValidation: (request, response, next) => {
     const schema = Joi.object({
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required()
+      password: Joi.string().min(6).required(),
+    });
+
+    const validationResult = schema.validate(request.body);
+    if (validationResult.error) {
+      return response
+        .status(400)
+        .json(errorMessage(validationResult.error.details[0].message));
+    }
+
+    next();
+  },
+
+  repeatVerifyMessageValidation: (request, response, next) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
     });
 
     const validationResult = schema.validate(request.body);
