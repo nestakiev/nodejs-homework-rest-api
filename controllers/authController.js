@@ -1,5 +1,7 @@
 const {
   registration,
+  verify,
+  repeatVerifyMessage,
   login,
   logout,
   updateUsersSubscription,
@@ -15,6 +17,36 @@ const registrationController = async (request, response) => {
   }
 
   response.status(201).json({ user });
+};
+
+const verifyController = async (request, response) => {
+  const { verificationToken } = request.params;
+  const verifiedUser = await verify(verificationToken);
+
+  if (!verifiedUser) {
+    return response.status(404).json({ message: "User not found" });
+  }
+
+  response.status(200).json({ message: "Verification successful" });
+};
+
+const repeatVarifyMessageController = async (request, response) => {
+  const { email } = request.body;
+
+  if (!email) {
+    return response
+      .status(400)
+      .json({ message: "missing required field email" });
+  }
+  const user = await repeatVerifyMessage(email);
+
+  if (!user) {
+    return response
+      .status(404)
+      .json({ message: "Verification has already been passed" });
+  }
+
+  response.status(200).json({ message: "Verification email sent" });
 };
 
 const loginController = async (request, response) => {
@@ -62,16 +94,16 @@ const updateAvatarController = async (request, response) => {
     const avatarUrl = await updateAvatar(_id, tempUpload, filename);
     response.status(200).json(avatarUrl);
   } catch (err) {
-    response
-      .status(400)
-      .json({
-        message: `Something went whong, please try again ${err.message}`,
-      });
+    response.status(400).json({
+      message: `Something went whong, please try again ${err.message}`,
+    });
   }
 };
 
 module.exports = {
   registrationController,
+  verifyController,
+  repeatVarifyMessageController,
   loginController,
   logoutController,
   currentUserController,
