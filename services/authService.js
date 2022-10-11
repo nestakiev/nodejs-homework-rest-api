@@ -101,7 +101,7 @@ const login = async (email, password) => {
     user: {
       email: userWithToken.email,
       subscription: userWithToken.subscription,
-      // avatarURL: userWithToken.avatarURL,
+      avatarURL: userWithToken.avatarURL,
     },
   };
 };
