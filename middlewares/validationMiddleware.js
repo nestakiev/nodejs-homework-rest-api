@@ -28,7 +28,7 @@ const errorMessage = (message) => {
 module.exports = {
   addContactValidation: (request, response, next) => {
     const schema = Joi.object({
-      name: Joi.string().alphanum().min(3).max(25).required(),
+      name: Joi.string().min(3).max(25).required(),
       email: Joi.string().email().optional(),
       phone: Joi.string()
         .pattern(
@@ -50,7 +50,7 @@ module.exports = {
 
   updateContactValidation: (request, response, next) => {
     const schema = Joi.object({
-      name: Joi.string().alphanum().min(3).max(25).optional(),
+      name: Joi.string().min(3).max(25).optional(),
       email: Joi.string().email().optional(),
       phone: Joi.string()
         .pattern(
