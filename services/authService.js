@@ -15,7 +15,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
-const registration = async (email, password) => {
+const registration = async (email, password, name) => {
   const user = await User.findOne({ email });
   if (user) {
     return "Email in use";
@@ -27,6 +27,7 @@ const registration = async (email, password) => {
   const avatarURL = gravatar.url(email);
   const newUser = await User.create({
     email,
+    name,
     password: hashPassword,
     avatarURL,
     verificationToken,
@@ -43,6 +44,7 @@ const registration = async (email, password) => {
 
   return {
     email: newUser.email,
+    name: newUser.name,
     subscription: newUser.subscription,
     avatarURL: newUser.avatarURL,
   };
@@ -100,6 +102,7 @@ const login = async (email, password) => {
     token: userWithToken.token,
     user: {
       email: userWithToken.email,
+      name: userWithToken.name,
       subscription: userWithToken.subscription,
       avatarURL: userWithToken.avatarURL,
     },
@@ -118,6 +121,7 @@ const updateUsersSubscription = async (id, subscription) => {
   );
   return {
     email: newUserInfo.email,
+    name: newUserInfo.name,
     subscription: newUserInfo.subscription,
     avatarURL: newUserInfo.avatarURL,
   };

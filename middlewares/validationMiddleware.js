@@ -85,6 +85,7 @@ module.exports = {
   registrationAndLoginValidation: (request, response, next) => {
     const schema = Joi.object({
       email: Joi.string().email().required(),
+      // name: Joi.string().min(2).required(),
       password: Joi.string().min(6).required(),
     });
 
