@@ -18,17 +18,18 @@ const {
 } = require("../../middlewares/uploadMulterMiddleware");
 
 const {
-  registrationAndLoginValidation,
+  registrationValidation,
+  loginValidation,
   repeatVerifyMessageValidation,
 } = require("../../middlewares/validationMiddleware");
 
 router.post(
   "/register",
-  registrationAndLoginValidation,
+  registrationValidation,
   registrationController
 );
 
-router.post("/login", registrationAndLoginValidation, loginController);
+router.post("/login", loginValidation, loginController);
 
 router.get("/verify/:verificationToken", verifyController);
 

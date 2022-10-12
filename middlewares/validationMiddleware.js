@@ -82,10 +82,26 @@ module.exports = {
     next();
   },
 
-  registrationAndLoginValidation: (request, response, next) => {
+  registrationValidation: (request, response, next) => {
     const schema = Joi.object({
       email: Joi.string().email().required(),
-      // name: Joi.string().min(2).required(),
+      name: Joi.string().min(2).required(),
+      password: Joi.string().min(6).required(),
+    });
+
+    const validationResult = schema.validate(request.body);
+    if (validationResult.error) {
+      return response
+        .status(400)
+        .json(errorMessage(validationResult.error.details[0].message));
+    }
+
+    next();
+  },
+
+  loginValidation: (request, response, next) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
       password: Joi.string().min(6).required(),
     });
 
