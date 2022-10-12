@@ -19,7 +19,7 @@ const registrationController = async (request, response) => {
   //   return response.status(409).json({ message: "Please, verify your email" });
   // }
 
-  response.status(201).json({ user });
+  response.status(201).json(user);
 };
 
 const verifyController = async (request, response) => {

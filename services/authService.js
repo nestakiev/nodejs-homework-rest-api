@@ -41,12 +41,29 @@ const registration = async (email, password, name) => {
   //   html: emailConfimLayout(verificationLink),
   // };
   // sgMail.send(msg);
+  console.log(newUser);
+
+  const token = jwt.sign(
+    {
+      _id: newUser._id,
+    },
+    process.env.JWT_SECRET
+  );
+
+  const userWithToken = await User.findByIdAndUpdate(
+    newUser._id,
+    { token },
+    { new: true }
+  );
 
   return {
-    email: newUser.email,
-    name: newUser.name,
-    subscription: newUser.subscription,
-    avatarURL: newUser.avatarURL,
+    token: userWithToken.token,
+    user: {
+      email: userWithToken.email,
+      name: userWithToken.name,
+      subscription: userWithToken.subscription,
+      avatarURL: userWithToken.avatarURL,
+    }
   };
 };
 

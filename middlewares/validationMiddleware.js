@@ -29,7 +29,7 @@ module.exports = {
   addContactValidation: (request, response, next) => {
     const schema = Joi.object({
       name: Joi.string().alphanum().min(3).max(25).required(),
-      email: Joi.string().email().required(),
+      email: Joi.string().email().optional(),
       phone: Joi.string()
         .pattern(
           /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
