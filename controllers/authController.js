@@ -9,9 +9,9 @@ const {
 } = require("../services/authService");
 
 const registrationController = async (request, response) => {
-  const { email, password } = request.body;
+  const { email, password, name } = request.body;
 
-  const user = await registration(email, password);
+  const user = await registration(email, password, name);
   if (user === "Email in use") {
     return response.status(409).json({ message: "Email in use" });
   }
