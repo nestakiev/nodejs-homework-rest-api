@@ -4,14 +4,14 @@ const gravatar = require("gravatar");
 const path = require("path");
 const Jimp = require("jimp");
 const fs = require("fs/promises");
-const sgMail = require("@sendgrid/mail");
+// const sgMail = require("@sendgrid/mail");
 require("dotenv").config();
-const { v4: uuidv4 } = require("uuid");
-const { emailConfimLayout } = require("../services/emailConfirmCreator");
+// const { v4: uuidv4 } = require("uuid");
+// const { emailConfimLayout } = require("../services/emailConfirmCreator");
 
 const { User } = require("../db/authModel");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -21,26 +21,26 @@ const registration = async (email, password, name) => {
     return "Email in use";
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const verificationToken = uuidv4();
-  const verificationLink = `${process.env.BASE_API_URL}/api/users/verify/${verificationToken}`;
+  // const verificationToken = uuidv4();
+  // const verificationLink = `${process.env.BASE_API_URL}/api/users/verify/${verificationToken}`;
 
   const avatarURL = gravatar.url(email);
   const newUser = await User.create({
     email,
     name,
     password: hashPassword,
-    avatarURL,
-    verificationToken,
+    avatarURL
+    // verificationToken,
   });
 
-  const msg = {
-    to: email,
-    from: process.env.EMAIL_SENDER,
-    subject: "Verify your email",
-    text: `For verify your email please click on ${verificationLink}`,
-    html: emailConfimLayout(verificationLink),
-  };
-  sgMail.send(msg);
+  // const msg = {
+  //   to: email,
+  //   from: process.env.EMAIL_SENDER,
+  //   subject: "Verify your email",
+  //   text: `For verify your email please click on ${verificationLink}`,
+  //   html: emailConfimLayout(verificationLink),
+  // };
+  // sgMail.send(msg);
 
   return {
     email: newUser.email,
@@ -64,23 +64,27 @@ const repeatVerifyMessage = async (email) => {
   const verifyUserInfo = await User.findOne({ email, verify: false });
 
   if (verifyUserInfo) {
-    const verificationLink = `${process.env.BASE_API_URL}/api/users/verify/${verifyUserInfo.verificationToken}`;
+    // const verificationLink = `${process.env.BASE_API_URL}/api/users/verify/${verifyUserInfo.verificationToken}`;
 
-    const msg = {
-      to: email,
-      from: process.env.EMAIL_SENDER,
-      subject: "Verify your email",
-      text: `For verify your email please click on ${verificationLink}`,
-      html: emailConfimLayout(verificationLink),
-    };
-    sgMail.send(msg);
+    // const msg = {
+    //   to: email,
+    //   from: process.env.EMAIL_SENDER,
+    //   subject: "Verify your email",
+    //   text: `For verify your email please click on ${verificationLink}`,
+    //   html: emailConfimLayout(verificationLink),
+    // };
+    // sgMail.send(msg);
   }
 
   return verifyUserInfo;
 };
 
 const login = async (email, password) => {
-  const user = await User.findOne({ email, verify: true });
+  const user = await User.findOne({email});
+
+  // if(user?.verify === false) {
+  //   return "Please, verify your email"
+  // }
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return "Email or password is wrong";

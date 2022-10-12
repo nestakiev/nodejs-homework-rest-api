@@ -15,6 +15,9 @@ const registrationController = async (request, response) => {
   if (user === "Email in use") {
     return response.status(409).json({ message: "Email in use" });
   }
+  // if (user === "Please, verify your email") {
+  //   return response.status(409).json({ message: "Please, verify your email" });
+  // }
 
   response.status(201).json({ user });
 };
